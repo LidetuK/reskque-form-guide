@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
   SelectContent,
@@ -14,17 +15,119 @@ import {
 } from "@/components/ui/select";
 
 export const ConsultingForm = () => {
+  const { toast } = useToast();
   const [step, setStep] = useState(1);
   const totalSteps = 5;
-  const [hasWorkedWithProvider, setHasWorkedWithProvider] = useState<string>("");
-  const [urgencyLevel, setUrgencyLevel] = useState<string>("");
-  const [needsFollowUp, setNeedsFollowUp] = useState<string>("");
-  const [deliveryType, setDeliveryType] = useState<string>("");
+  const [formData, setFormData] = useState({
+    name: "",
+    organization: "",
+    industry: "",
+    businessTime: "",
+    goals: "",
+    ageRange: "",
+    service: "",
+    impactSize: "",
+    challenges: "",
+    obstacles: "",
+    urgencyLevel: "",
+    timeSensitive: "",
+    hasWorkedWithProvider: "",
+    previousExperience: "",
+    whyNow: "",
+    successVision: "",
+    focusArea: "",
+    deliveryType: "",
+    venue: "",
+    format: "",
+    budget: "",
+    additionalInfo: "",
+    needsFollowUp: "",
+    preferredTime: "",
+    timezone: "",
+  });
+
+  const validateStep = (currentStep: number) => {
+    switch (currentStep) {
+      case 1:
+        return true; // Introduction step, no validation needed
+      case 2:
+        return (
+          formData.name.trim() !== "" &&
+          formData.organization.trim() !== "" &&
+          formData.industry.trim() !== "" &&
+          formData.service !== ""
+        );
+      case 3:
+        return (
+          formData.challenges.trim() !== "" &&
+          formData.urgencyLevel !== ""
+        );
+      case 4:
+        return (
+          formData.successVision.trim() !== "" &&
+          formData.deliveryType !== "" &&
+          formData.budget !== ""
+        );
+      case 5:
+        return true; // Final step, optional fields
+      default:
+        return false;
+    }
+  };
 
   const handleContinue = () => {
+    if (!validateStep(step)) {
+      toast({
+        variant: "destructive",
+        title: "Required Fields",
+        description: "Please fill in all required fields before continuing.",
+      });
+      return;
+    }
+
     if (step < totalSteps) {
       setStep((prev) => prev + 1);
     }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          access_key: "YOUR_WEB3FORMS_ACCESS_KEY", // You'll need to sign up at web3forms.com
+          from_name: "Consulting Form Submission",
+          to: "thee.lifeguide@gmail.com",
+          subject: `New Consulting Form Submission from ${formData.name}`,
+          message: JSON.stringify(formData, null, 2),
+        }),
+      });
+
+      if (response.ok) {
+        toast({
+          title: "Success!",
+          description: "Your form has been submitted successfully.",
+        });
+      } else {
+        throw new Error("Failed to submit form");
+      }
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Failed to submit form. Please try again later.",
+      });
+    }
+  };
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
   };
 
   return (
@@ -83,17 +186,17 @@ export const ConsultingForm = () => {
             <div className="space-y-6">
               <div className="space-y-4">
                 <Label htmlFor="name">What's your name and organization?</Label>
-                <Input id="name" placeholder="Your answer" />
+                <Input id="name" placeholder="Your answer" onChange={(e) => handleInputChange('name', e.target.value)} />
               </div>
 
               <div className="space-y-4">
                 <Label htmlFor="industry">What industry are you in?</Label>
-                <Input id="industry" placeholder="Your answer" />
+                <Input id="industry" placeholder="Your answer" onChange={(e) => handleInputChange('industry', e.target.value)} />
               </div>
 
               <div className="space-y-4">
                 <Label htmlFor="businessTime">How long have you been in business?</Label>
-                <Input id="businessTime" placeholder="Your answer" />
+                <Input id="businessTime" placeholder="Your answer" onChange={(e) => handleInputChange('businessTime', e.target.value)} />
               </div>
 
               <div className="space-y-4">
@@ -102,12 +205,13 @@ export const ConsultingForm = () => {
                   id="goals" 
                   placeholder="e.g., revenue growth, market expansion, brand building, etc."
                   className="min-h-[100px]"
+                  onChange={(e) => handleInputChange('goals', e.target.value)}
                 />
               </div>
 
               <div className="space-y-4">
                 <Label>Select the age range of your group</Label>
-                <RadioGroup defaultValue="14-25">
+                <RadioGroup defaultValue="14-25" onValueChange={(value) => handleInputChange('ageRange', value)}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="14-25" id="age-14-25" />
                     <Label htmlFor="age-14-25">14-25</Label>
@@ -133,7 +237,7 @@ export const ConsultingForm = () => {
 
               <div className="space-y-4">
                 <Label>What service are you most interested in exploring with Resk'Que?</Label>
-                <Select>
+                <Select onValueChange={(value) => handleInputChange('service', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a service" />
                   </SelectTrigger>
@@ -148,7 +252,7 @@ export const ConsultingForm = () => {
 
               <div className="space-y-4">
                 <Label>How many people will this service impact directly?</Label>
-                <RadioGroup defaultValue="less-than-10">
+                <RadioGroup defaultValue="less-than-10" onValueChange={(value) => handleInputChange('impactSize', value)}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="less-than-10" id="impact-10" />
                     <Label htmlFor="impact-10">Less than 10</Label>
@@ -200,6 +304,7 @@ export const ConsultingForm = () => {
                   id="currentChallenges"
                   placeholder="e.g., Our team lacks clear communication, We need a high-energy speaker for our annual conference, Our business growth has plateaued"
                   className="min-h-[120px]"
+                  onChange={(e) => handleInputChange('challenges', e.target.value)}
                 />
               </div>
 
@@ -211,12 +316,13 @@ export const ConsultingForm = () => {
                   id="obstacles"
                   placeholder="e.g., Limited resources, Lack of expertise, Unclear direction"
                   className="min-h-[100px]"
+                  onChange={(e) => handleInputChange('obstacles', e.target.value)}
                 />
               </div>
 
               <div className="space-y-4">
                 <Label>On a scale of 1-10, how urgent is it for you to address this issue?</Label>
-                <RadioGroup value={urgencyLevel} onValueChange={setUrgencyLevel}>
+                <RadioGroup value={formData.urgencyLevel} onValueChange={(value) => handleInputChange('urgencyLevel', value)}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="1-3" id="urgency-1-3" />
                     <Label htmlFor="urgency-1-3">1-3 (Not very urgent)</Label>
@@ -232,7 +338,7 @@ export const ConsultingForm = () => {
                 </RadioGroup>
               </div>
 
-              {urgencyLevel === "7-10" && (
+              {formData.urgencyLevel === "7-10" && (
                 <div className="space-y-4">
                   <Label htmlFor="timeSensitive">
                     What makes this issue time-sensitive?
@@ -241,13 +347,14 @@ export const ConsultingForm = () => {
                     id="timeSensitive"
                     placeholder="Please explain why this is urgent"
                     className="min-h-[100px]"
+                    onChange={(e) => handleInputChange('timeSensitive', e.target.value)}
                   />
                 </div>
               )}
 
               <div className="space-y-4">
                 <Label>Have you worked with a similar service provider before?</Label>
-                <RadioGroup value={hasWorkedWithProvider} onValueChange={setHasWorkedWithProvider}>
+                <RadioGroup value={formData.hasWorkedWithProvider} onValueChange={(value) => handleInputChange('hasWorkedWithProvider', value)}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="provider-yes" />
                     <Label htmlFor="provider-yes">Yes</Label>
@@ -259,7 +366,7 @@ export const ConsultingForm = () => {
                 </RadioGroup>
               </div>
 
-              {hasWorkedWithProvider === "yes" && (
+              {formData.hasWorkedWithProvider === "yes" && (
                 <div className="space-y-4">
                   <Label htmlFor="previousExperience">
                     What was your experience like? Did they meet your expectations?
@@ -268,11 +375,12 @@ export const ConsultingForm = () => {
                     id="previousExperience"
                     placeholder="Please share your previous experience"
                     className="min-h-[100px]"
+                    onChange={(e) => handleInputChange('previousExperience', e.target.value)}
                   />
                 </div>
               )}
 
-              {hasWorkedWithProvider === "no" && (
+              {formData.hasWorkedWithProvider === "no" && (
                 <div className="space-y-4">
                   <Label htmlFor="whyNow">
                     What made you decide to explore working with someone now?
@@ -281,6 +389,7 @@ export const ConsultingForm = () => {
                     id="whyNow"
                     placeholder="Please explain your decision"
                     className="min-h-[100px]"
+                    onChange={(e) => handleInputChange('whyNow', e.target.value)}
                   />
                 </div>
               )}
@@ -313,12 +422,13 @@ export const ConsultingForm = () => {
                   id="success"
                   placeholder="e.g., A more cohesive team, Increased employee morale, Higher event attendance/engagement"
                   className="min-h-[100px]"
+                  onChange={(e) => handleInputChange('successVision', e.target.value)}
                 />
               </div>
 
               <div className="space-y-4">
                 <Label>Which of these areas do you want to focus on improving FIRST?</Label>
-                <Select>
+                <Select onValueChange={(value) => handleInputChange('focusArea', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select an area" />
                   </SelectTrigger>
@@ -336,7 +446,7 @@ export const ConsultingForm = () => {
 
               <div className="space-y-4">
                 <Label>Where will this service be delivered?</Label>
-                <RadioGroup value={deliveryType} onValueChange={setDeliveryType}>
+                <RadioGroup value={formData.deliveryType} onValueChange={(value) => handleInputChange('deliveryType', value)}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="in-person" id="delivery-in-person" />
                     <Label htmlFor="delivery-in-person">In-person at a physical location</Label>
@@ -352,16 +462,16 @@ export const ConsultingForm = () => {
                 </RadioGroup>
               </div>
 
-              {deliveryType === "in-person" && (
+              {formData.deliveryType === "in-person" && (
                 <div className="space-y-4">
                   <Label htmlFor="venue">Please provide the venue/location details:</Label>
-                  <Input id="venue" placeholder="Enter venue details" />
+                  <Input id="venue" placeholder="Enter venue details" onChange={(e) => handleInputChange('venue', e.target.value)} />
                 </div>
               )}
 
               <div className="space-y-4">
                 <Label>What's your preferred format for delivery?</Label>
-                <Select>
+                <Select onValueChange={(value) => handleInputChange('format', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a format" />
                   </SelectTrigger>
@@ -377,7 +487,7 @@ export const ConsultingForm = () => {
 
               <div className="space-y-4">
                 <Label>Do you have a budget range in mind for this service?</Label>
-                <Select>
+                <Select onValueChange={(value) => handleInputChange('budget', value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a budget range" />
                   </SelectTrigger>
@@ -418,12 +528,13 @@ export const ConsultingForm = () => {
                   id="additional-info"
                   placeholder="Share any additional information"
                   className="min-h-[100px]"
+                  onChange={(e) => handleInputChange('additionalInfo', e.target.value)}
                 />
               </div>
 
               <div className="space-y-4">
                 <Label>Would you like to schedule a follow-up call with Resk'Que or his team to discuss your requirements further?</Label>
-                <RadioGroup value={needsFollowUp} onValueChange={setNeedsFollowUp}>
+                <RadioGroup value={formData.needsFollowUp} onValueChange={(value) => handleInputChange('needsFollowUp', value)}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="followup-yes" />
                     <Label htmlFor="followup-yes">Yes</Label>
@@ -435,16 +546,16 @@ export const ConsultingForm = () => {
                 </RadioGroup>
               </div>
 
-              {needsFollowUp === "yes" && (
+              {formData.needsFollowUp === "yes" && (
                 <div className="space-y-6">
                   <div className="space-y-4">
                     <Label htmlFor="preferred-time">When would be the best time for the follow-up call?</Label>
-                    <Input type="datetime-local" id="preferred-time" />
+                    <Input type="datetime-local" id="preferred-time" onChange={(e) => handleInputChange('preferredTime', e.target.value)} />
                   </div>
 
                   <div className="space-y-4">
                     <Label>What time zone are you located in?</Label>
-                    <Select>
+                    <Select onValueChange={(value) => handleInputChange('timezone', value)}>
                       <SelectTrigger>
                         <SelectValue placeholder="Select your timezone" />
                       </SelectTrigger>
@@ -462,7 +573,7 @@ export const ConsultingForm = () => {
 
             <div className="text-center space-y-6">
               <Button
-                type="submit"
+                onClick={handleSubmit}
                 className="bg-black text-white px-8 py-6 text-lg rounded-full hover:bg-gray-800 transition-colors"
               >
                 Submit
@@ -487,3 +598,4 @@ export const ConsultingForm = () => {
     </div>
   );
 };
+
