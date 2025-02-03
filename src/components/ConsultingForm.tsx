@@ -157,9 +157,9 @@ export const ConsultingForm = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          access_key: "YOUR_WEB3FORMS_ACCESS_KEY",
+          access_key: "8e945660-1127-4981-a429-708507e05eda",
           from_name: "Consulting Form Submission",
-          to: "thee.lifeguide@gmail.com",
+          to: "thee.lifeguide+speaker@gmail.com",
           subject: `New Consulting Form Submission from ${formData.name}`,
           message: JSON.stringify(formData, null, 2),
         }),
@@ -168,7 +168,7 @@ export const ConsultingForm = () => {
       if (response.ok) {
         toast({
           title: "Success!",
-          description: "Your form has been submitted successfully.",
+          description: "Thank you for sharing your thoughts and insights! We truly appreciate your honesty and openness. Based on your responses, we'll prepare personalized recommendations to ensure Resk'Que delivers exceptional value to you and your audience. If you opted for a follow-up call, expect to hear from us shortly to finalize everything. Have a great day ahead!",
         });
       } else {
         throw new Error("Failed to submit form");
