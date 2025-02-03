@@ -44,6 +44,9 @@ export const ConsultingForm = () => {
     needsFollowUp: "",
     preferredTime: "",
     timezone: "",
+    trainingFormat: "",
+    intendedFor: "",
+    otherServiceDescription: "",
   });
 
   const validateStep = (currentStep: number) => {
@@ -55,7 +58,13 @@ export const ConsultingForm = () => {
           formData.name?.trim() !== "" &&
           formData.organization?.trim() !== "" &&
           formData.industry?.trim() !== "" &&
-          formData.service !== ""
+          formData.businessTime?.trim() !== "" &&
+          formData.goals?.trim() !== "" &&
+          formData.trainingFormat !== "" &&
+          formData.service !== "" &&
+          formData.ageRange !== "" &&
+          formData.impactSize !== "" &&
+          formData.intendedFor !== ""
         );
       case 3:
         return (
@@ -83,7 +92,13 @@ export const ConsultingForm = () => {
           if (!formData.name?.trim()) missingFields.push("Name");
           if (!formData.organization?.trim()) missingFields.push("Organization");
           if (!formData.industry?.trim()) missingFields.push("Industry");
+          if (!formData.businessTime?.trim()) missingFields.push("Business Time");
+          if (!formData.goals?.trim()) missingFields.push("Goals");
+          if (!formData.trainingFormat) missingFields.push("Training Format");
           if (!formData.service) missingFields.push("Service");
+          if (!formData.ageRange) missingFields.push("Age Range");
+          if (!formData.impactSize) missingFields.push("Impact Size");
+          if (!formData.intendedFor) missingFields.push("Intended For");
           break;
         case 3:
           if (!formData.challenges?.trim()) missingFields.push("Current Challenges");
@@ -200,22 +215,43 @@ export const ConsultingForm = () => {
             transition={{ duration: 0.5 }}
             className="space-y-8"
           >
-            <h2 className="text-3xl font-bold mb-6">Understanding Your Needs</h2>
+            <h2 className="text-3xl font-bold mb-6">Basic Information</h2>
             
             <div className="space-y-6">
               <div className="space-y-4">
                 <Label htmlFor="name">What's your name and organization?</Label>
-                <Input id="name" placeholder="Your answer" onChange={(e) => handleInputChange('name', e.target.value)} />
+                <Input 
+                  id="name" 
+                  placeholder="Your name"
+                  value={formData.name}
+                  onChange={(e) => handleInputChange('name', e.target.value)} 
+                />
+                <Input 
+                  id="organization" 
+                  placeholder="Your organization"
+                  value={formData.organization}
+                  onChange={(e) => handleInputChange('organization', e.target.value)}
+                />
               </div>
 
               <div className="space-y-4">
                 <Label htmlFor="industry">What industry are you in?</Label>
-                <Input id="industry" placeholder="Your answer" onChange={(e) => handleInputChange('industry', e.target.value)} />
+                <Input 
+                  id="industry" 
+                  placeholder="Your industry"
+                  value={formData.industry}
+                  onChange={(e) => handleInputChange('industry', e.target.value)}
+                />
               </div>
 
               <div className="space-y-4">
                 <Label htmlFor="businessTime">How long have you been in business?</Label>
-                <Input id="businessTime" placeholder="Your answer" onChange={(e) => handleInputChange('businessTime', e.target.value)} />
+                <Input 
+                  id="businessTime" 
+                  placeholder="e.g., 5 years"
+                  value={formData.businessTime}
+                  onChange={(e) => handleInputChange('businessTime', e.target.value)}
+                />
               </div>
 
               <div className="space-y-4">
@@ -224,13 +260,17 @@ export const ConsultingForm = () => {
                   id="goals" 
                   placeholder="e.g., revenue growth, market expansion, brand building, etc."
                   className="min-h-[100px]"
+                  value={formData.goals}
                   onChange={(e) => handleInputChange('goals', e.target.value)}
                 />
               </div>
 
               <div className="space-y-4">
                 <Label>Select the age range of your group</Label>
-                <RadioGroup defaultValue="14-25" onValueChange={(value) => handleInputChange('ageRange', value)}>
+                <RadioGroup 
+                  value={formData.ageRange} 
+                  onValueChange={(value) => handleInputChange('ageRange', value)}
+                >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="14-25" id="age-14-25" />
                     <Label htmlFor="age-14-25">14-25</Label>
@@ -256,7 +296,10 @@ export const ConsultingForm = () => {
 
               <div className="space-y-4">
                 <Label>What service are you most interested in exploring with Resk'Que?</Label>
-                <Select onValueChange={(value) => handleInputChange('service', value)}>
+                <Select 
+                  value={formData.service}
+                  onValueChange={(value) => handleInputChange('service', value)}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a service" />
                   </SelectTrigger>
@@ -269,9 +312,60 @@ export const ConsultingForm = () => {
                 </Select>
               </div>
 
+              {formData.service === "other" && (
+                <div className="space-y-4">
+                  <Label htmlFor="otherService">Can you elaborate on the type of service you're seeking?</Label>
+                  <Textarea 
+                    id="otherService"
+                    placeholder="Please describe the service you need"
+                    value={formData.otherServiceDescription}
+                    onChange={(e) => handleInputChange('otherServiceDescription', e.target.value)}
+                  />
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <Label>Who is this service intended for?</Label>
+                <Select 
+                  value={formData.intendedFor}
+                  onValueChange={(value) => handleInputChange('intendedFor', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select intended audience" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="organization">My organization/company</SelectItem>
+                    <SelectItem value="department">A specific department/team</SelectItem>
+                    <SelectItem value="external">External audience/event attendees</SelectItem>
+                    <SelectItem value="community">Community/nonprofit initiative</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-4">
+                <Label>Do you have a preferred training format?</Label>
+                <Select 
+                  value={formData.trainingFormat}
+                  onValueChange={(value) => handleInputChange('trainingFormat', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select format" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="in-person">In-person workshop</SelectItem>
+                    <SelectItem value="virtual">Virtual sessions</SelectItem>
+                    <SelectItem value="hybrid">Hybrid</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
               <div className="space-y-4">
                 <Label>How many people will this service impact directly?</Label>
-                <RadioGroup defaultValue="less-than-10" onValueChange={(value) => handleInputChange('impactSize', value)}>
+                <RadioGroup 
+                  value={formData.impactSize}
+                  onValueChange={(value) => handleInputChange('impactSize', value)}
+                >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="less-than-10" id="impact-10" />
                     <Label htmlFor="impact-10">Less than 10</Label>
