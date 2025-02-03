@@ -765,7 +765,7 @@ export const ConsultingForm = () => {
             <div className="space-y-6">
               <div className="space-y-4">
                 <Label htmlFor="additional-info">
-                  Is there anything else you'd like Resk'Que to know about your organization, event, or project?
+                  Is there anything else you'd like Resk'Que to know about your organization, event, or project before moving forward?
                 </Label>
                 <Textarea 
                   id="additional-info"
@@ -833,17 +833,6 @@ export const ConsultingForm = () => {
               >
                 Submit
               </Button>
-
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="text-lg text-gray-700 mt-8 leading-relaxed"
-              >
-                Thank you for sharing your thoughts and insights! We truly appreciate your honesty and openness. 
-                Based on your responses, we'll prepare personalized recommendations to ensure Resk'Que delivers 
-                exceptional value to you and your audience. If you opted for a follow-up call, expect to hear 
-                from us shortly to finalize everything. Have a great day ahead!
-              </motion.p>
             </div>
           </motion.div>
         )}
