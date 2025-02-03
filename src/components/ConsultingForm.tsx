@@ -47,6 +47,16 @@ export const ConsultingForm = () => {
     trainingFormat: "",
     intendedFor: "",
     otherServiceDescription: "",
+    measureImpact: "",
+    keyTakeaways: "",
+    timeframe: "",
+    eventDate: "",
+    presentationType: "",
+    specificTopics: "",
+    eventRequirements: "",
+    currentRevenue: "",
+    idealTimeframe: "",
+    customizationNeeded: "",
   });
 
   const validateStep = (currentStep: number) => {
@@ -69,12 +79,22 @@ export const ConsultingForm = () => {
       case 3:
         return (
           formData.challenges?.trim() !== "" &&
-          formData.urgencyLevel !== ""
+          formData.obstacles?.trim() !== "" &&
+          formData.urgencyLevel !== "" &&
+          (formData.urgencyLevel !== "7-10" || formData.timeSensitive?.trim() !== "") &&
+          formData.hasWorkedWithProvider !== "" &&
+          ((formData.hasWorkedWithProvider === "yes" && formData.previousExperience?.trim() !== "") ||
+          (formData.hasWorkedWithProvider === "no" && formData.whyNow?.trim() !== ""))
         );
       case 4:
         return (
           formData.successVision?.trim() !== "" &&
+          formData.focusArea !== "" &&
+          formData.measureImpact?.trim() !== "" &&
+          formData.keyTakeaways?.trim() !== "" &&
+          formData.timeframe !== "" &&
           formData.deliveryType !== "" &&
+          formData.format !== "" &&
           formData.budget !== ""
         );
       case 5:
@@ -106,7 +126,12 @@ export const ConsultingForm = () => {
           break;
         case 4:
           if (!formData.successVision?.trim()) missingFields.push("Success Vision");
+          if (!formData.focusArea) missingFields.push("Focus Area");
+          if (!formData.measureImpact?.trim()) missingFields.push("Measure Impact");
+          if (!formData.keyTakeaways?.trim()) missingFields.push("Key Takeaways");
+          if (!formData.timeframe) missingFields.push("Timeframe");
           if (!formData.deliveryType) missingFields.push("Delivery Type");
+          if (!formData.format) missingFields.push("Format");
           if (!formData.budget) missingFields.push("Budget Range");
           break;
       }
@@ -410,13 +435,14 @@ export const ConsultingForm = () => {
             
             <div className="space-y-6">
               <div className="space-y-4">
-                <Label htmlFor="currentChallenges">
-                  Can you describe the current situation or challenge you're facing?
+                <Label htmlFor="challenges">
+                  What are the biggest challenges your group is currently facing?
                 </Label>
                 <Textarea 
-                  id="currentChallenges"
-                  placeholder="e.g., Our team lacks clear communication, We need a high-energy speaker for our annual conference, Our business growth has plateaued"
+                  id="challenges"
+                  placeholder="e.g., Our team lacks clear communication, We need a high-energy speaker for our annual conference"
                   className="min-h-[120px]"
+                  value={formData.challenges}
                   onChange={(e) => handleInputChange('challenges', e.target.value)}
                 />
               </div>
@@ -429,13 +455,17 @@ export const ConsultingForm = () => {
                   id="obstacles"
                   placeholder="e.g., Limited resources, Lack of expertise, Unclear direction"
                   className="min-h-[100px]"
+                  value={formData.obstacles}
                   onChange={(e) => handleInputChange('obstacles', e.target.value)}
                 />
               </div>
 
               <div className="space-y-4">
-                <Label>On a scale of 1-10, how urgent is it for you to address this issue?</Label>
-                <RadioGroup value={formData.urgencyLevel} onValueChange={(value) => handleInputChange('urgencyLevel', value)}>
+                <Label>How urgent is it for you to address this issue?</Label>
+                <RadioGroup 
+                  value={formData.urgencyLevel}
+                  onValueChange={(value) => handleInputChange('urgencyLevel', value)}
+                >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="1-3" id="urgency-1-3" />
                     <Label htmlFor="urgency-1-3">1-3 (Not very urgent)</Label>
@@ -453,13 +483,11 @@ export const ConsultingForm = () => {
 
               {formData.urgencyLevel === "7-10" && (
                 <div className="space-y-4">
-                  <Label htmlFor="timeSensitive">
-                    What makes this issue time-sensitive?
-                  </Label>
+                  <Label htmlFor="timeSensitive">What makes this issue time-sensitive?</Label>
                   <Textarea 
                     id="timeSensitive"
                     placeholder="Please explain why this is urgent"
-                    className="min-h-[100px]"
+                    value={formData.timeSensitive}
                     onChange={(e) => handleInputChange('timeSensitive', e.target.value)}
                   />
                 </div>
@@ -467,7 +495,10 @@ export const ConsultingForm = () => {
 
               <div className="space-y-4">
                 <Label>Have you worked with a similar service provider before?</Label>
-                <RadioGroup value={formData.hasWorkedWithProvider} onValueChange={(value) => handleInputChange('hasWorkedWithProvider', value)}>
+                <RadioGroup 
+                  value={formData.hasWorkedWithProvider}
+                  onValueChange={(value) => handleInputChange('hasWorkedWithProvider', value)}
+                >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="provider-yes" />
                     <Label htmlFor="provider-yes">Yes</Label>
@@ -482,12 +513,12 @@ export const ConsultingForm = () => {
               {formData.hasWorkedWithProvider === "yes" && (
                 <div className="space-y-4">
                   <Label htmlFor="previousExperience">
-                    What was your experience like? Did they meet your expectations?
+                    What was your experience like? What worked well, and what could be improved?
                   </Label>
                   <Textarea 
                     id="previousExperience"
                     placeholder="Please share your previous experience"
-                    className="min-h-[100px]"
+                    value={formData.previousExperience}
                     onChange={(e) => handleInputChange('previousExperience', e.target.value)}
                   />
                 </div>
@@ -501,7 +532,7 @@ export const ConsultingForm = () => {
                   <Textarea 
                     id="whyNow"
                     placeholder="Please explain your decision"
-                    className="min-h-[100px]"
+                    value={formData.whyNow}
                     onChange={(e) => handleInputChange('whyNow', e.target.value)}
                   />
                 </div>
@@ -528,22 +559,26 @@ export const ConsultingForm = () => {
             
             <div className="space-y-6">
               <div className="space-y-4">
-                <Label htmlFor="success">
+                <Label htmlFor="successVision">
                   What does success look like for you after engaging with Resk'Que's services?
                 </Label>
                 <Textarea 
-                  id="success"
+                  id="successVision"
                   placeholder="e.g., A more cohesive team, Increased employee morale, Higher event attendance/engagement"
                   className="min-h-[100px]"
+                  value={formData.successVision}
                   onChange={(e) => handleInputChange('successVision', e.target.value)}
                 />
               </div>
 
               <div className="space-y-4">
-                <Label>Which of these areas do you want to focus on improving FIRST?</Label>
-                <Select onValueChange={(value) => handleInputChange('focusArea', value)}>
+                <Label>Which area do you want to focus on improving FIRST?</Label>
+                <Select 
+                  value={formData.focusArea}
+                  onValueChange={(value) => handleInputChange('focusArea', value)}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select an area" />
+                    <SelectValue placeholder="Select focus area" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="leadership">Leadership skills</SelectItem>
@@ -558,8 +593,51 @@ export const ConsultingForm = () => {
               </div>
 
               <div className="space-y-4">
+                <Label htmlFor="measureImpact">How do you envision measuring the impact of this service?</Label>
+                <Textarea 
+                  id="measureImpact"
+                  placeholder="e.g., Through feedback surveys, By tracking performance metrics"
+                  value={formData.measureImpact}
+                  onChange={(e) => handleInputChange('measureImpact', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <Label htmlFor="keyTakeaways">
+                  What are the key takeaways you want your audience to gain?
+                </Label>
+                <Textarea 
+                  id="keyTakeaways"
+                  placeholder="Please describe the desired takeaways"
+                  value={formData.keyTakeaways}
+                  onChange={(e) => handleInputChange('keyTakeaways', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-4">
+                <Label>When would you like this service to take place?</Label>
+                <Select 
+                  value={formData.timeframe}
+                  onValueChange={(value) => handleInputChange('timeframe', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select timeframe" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="asap">As soon as possible</SelectItem>
+                    <SelectItem value="1-3-months">Within the next 1-3 months</SelectItem>
+                    <SelectItem value="3-6-months">In 3-6 months</SelectItem>
+                    <SelectItem value="6-plus-months">Beyond 6 months</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-4">
                 <Label>Where will this service be delivered?</Label>
-                <RadioGroup value={formData.deliveryType} onValueChange={(value) => handleInputChange('deliveryType', value)}>
+                <RadioGroup 
+                  value={formData.deliveryType}
+                  onValueChange={(value) => handleInputChange('deliveryType', value)}
+                >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="in-person" id="delivery-in-person" />
                     <Label htmlFor="delivery-in-person">In-person at a physical location</Label>
@@ -578,15 +656,23 @@ export const ConsultingForm = () => {
               {formData.deliveryType === "in-person" && (
                 <div className="space-y-4">
                   <Label htmlFor="venue">Please provide the venue/location details:</Label>
-                  <Input id="venue" placeholder="Enter venue details" onChange={(e) => handleInputChange('venue', e.target.value)} />
+                  <Input 
+                    id="venue"
+                    placeholder="Enter venue details"
+                    value={formData.venue}
+                    onChange={(e) => handleInputChange('venue', e.target.value)}
+                  />
                 </div>
               )}
 
               <div className="space-y-4">
                 <Label>What's your preferred format for delivery?</Label>
-                <Select onValueChange={(value) => handleInputChange('format', value)}>
+                <Select 
+                  value={formData.format}
+                  onValueChange={(value) => handleInputChange('format', value)}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a format" />
+                    <SelectValue placeholder="Select format" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="workshop">Workshop-style interactive session</SelectItem>
@@ -599,10 +685,23 @@ export const ConsultingForm = () => {
               </div>
 
               <div className="space-y-4">
+                <Label htmlFor="currentRevenue">What's your current annual revenue? (Optional)</Label>
+                <Input 
+                  id="currentRevenue"
+                  placeholder="Optional"
+                  value={formData.currentRevenue}
+                  onChange={(e) => handleInputChange('currentRevenue', e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-4">
                 <Label>Do you have a budget range in mind for this service?</Label>
-                <Select onValueChange={(value) => handleInputChange('budget', value)}>
+                <Select 
+                  value={formData.budget}
+                  onValueChange={(value) => handleInputChange('budget', value)}
+                >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a budget range" />
+                    <SelectValue placeholder="Select budget range" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="under-1k">Under $1,000</SelectItem>
@@ -611,6 +710,37 @@ export const ConsultingForm = () => {
                     <SelectItem value="over-10k">Over $10,000</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+
+              {formData.budget === "over-10k" && (
+                <div className="space-y-4">
+                  <Label>Would you like to discuss additional customization options?</Label>
+                  <RadioGroup 
+                    value={formData.customizationNeeded}
+                    onValueChange={(value) => handleInputChange('customizationNeeded', value)}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="yes" id="customization-yes" />
+                      <Label htmlFor="customization-yes">Yes</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="no" id="customization-no" />
+                      <Label htmlFor="customization-no">No</Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <Label htmlFor="idealTimeframe">
+                  What's your ideal timeframe for seeing results?
+                </Label>
+                <Input 
+                  id="idealTimeframe"
+                  placeholder="e.g., 3 months, 6 months"
+                  value={formData.idealTimeframe}
+                  onChange={(e) => handleInputChange('idealTimeframe', e.target.value)}
+                />
               </div>
             </div>
 
@@ -635,19 +765,23 @@ export const ConsultingForm = () => {
             <div className="space-y-6">
               <div className="space-y-4">
                 <Label htmlFor="additional-info">
-                  Is there anything else you'd like Resk'Que to know about your organization, event, or project before moving forward?
+                  Is there anything else you'd like Resk'Que to know about your organization, event, or project?
                 </Label>
                 <Textarea 
                   id="additional-info"
                   placeholder="Share any additional information"
                   className="min-h-[100px]"
+                  value={formData.additionalInfo}
                   onChange={(e) => handleInputChange('additionalInfo', e.target.value)}
                 />
               </div>
 
               <div className="space-y-4">
-                <Label>Would you like to schedule a follow-up call with Resk'Que or his team to discuss your requirements further?</Label>
-                <RadioGroup value={formData.needsFollowUp} onValueChange={(value) => handleInputChange('needsFollowUp', value)}>
+                <Label>Would you like to schedule a follow-up call?</Label>
+                <RadioGroup 
+                  value={formData.needsFollowUp}
+                  onValueChange={(value) => handleInputChange('needsFollowUp', value)}
+                >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="yes" id="followup-yes" />
                     <Label htmlFor="followup-yes">Yes</Label>
@@ -663,12 +797,20 @@ export const ConsultingForm = () => {
                 <div className="space-y-6">
                   <div className="space-y-4">
                     <Label htmlFor="preferred-time">When would be the best time for the follow-up call?</Label>
-                    <Input type="datetime-local" id="preferred-time" onChange={(e) => handleInputChange('preferredTime', e.target.value)} />
+                    <Input 
+                      type="datetime-local" 
+                      id="preferred-time"
+                      value={formData.preferredTime}
+                      onChange={(e) => handleInputChange('preferredTime', e.target.value)}
+                    />
                   </div>
 
                   <div className="space-y-4">
                     <Label>What time zone are you located in?</Label>
-                    <Select onValueChange={(value) => handleInputChange('timezone', value)}>
+                    <Select 
+                      value={formData.timezone}
+                      onValueChange={(value) => handleInputChange('timezone', value)}
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select your timezone" />
                       </SelectTrigger>
@@ -692,18 +834,16 @@ export const ConsultingForm = () => {
                 Submit
               </Button>
 
-              {step === totalSteps && (
-                <motion.p
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="text-lg text-gray-700 mt-8 leading-relaxed"
-                >
-                  Thank you for sharing your thoughts and insights! We truly appreciate your honesty and openness. 
-                  Based on your responses, we'll prepare personalized recommendations to ensure Resk'Que delivers 
-                  exceptional value to you and your audience. If you opted for a follow-up call, expect to hear 
-                  from us shortly to finalize everything. Have a great day ahead!
-                </motion.p>
-              )}
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-lg text-gray-700 mt-8 leading-relaxed"
+              >
+                Thank you for sharing your thoughts and insights! We truly appreciate your honesty and openness. 
+                Based on your responses, we'll prepare personalized recommendations to ensure Resk'Que delivers 
+                exceptional value to you and your audience. If you opted for a follow-up call, expect to hear 
+                from us shortly to finalize everything. Have a great day ahead!
+              </motion.p>
             </div>
           </motion.div>
         )}
