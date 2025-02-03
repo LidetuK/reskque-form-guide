@@ -52,19 +52,19 @@ export const ConsultingForm = () => {
         return true; // Introduction step, no validation needed
       case 2:
         return (
-          formData.name.trim() !== "" &&
-          formData.organization.trim() !== "" &&
-          formData.industry.trim() !== "" &&
+          formData.name?.trim() !== "" &&
+          formData.organization?.trim() !== "" &&
+          formData.industry?.trim() !== "" &&
           formData.service !== ""
         );
       case 3:
         return (
-          formData.challenges.trim() !== "" &&
+          formData.challenges?.trim() !== "" &&
           formData.urgencyLevel !== ""
         );
       case 4:
         return (
-          formData.successVision.trim() !== "" &&
+          formData.successVision?.trim() !== "" &&
           formData.deliveryType !== "" &&
           formData.budget !== ""
         );
@@ -77,10 +77,29 @@ export const ConsultingForm = () => {
 
   const handleContinue = () => {
     if (!validateStep(step)) {
+      let missingFields = [];
+      switch (step) {
+        case 2:
+          if (!formData.name?.trim()) missingFields.push("Name");
+          if (!formData.organization?.trim()) missingFields.push("Organization");
+          if (!formData.industry?.trim()) missingFields.push("Industry");
+          if (!formData.service) missingFields.push("Service");
+          break;
+        case 3:
+          if (!formData.challenges?.trim()) missingFields.push("Current Challenges");
+          if (!formData.urgencyLevel) missingFields.push("Urgency Level");
+          break;
+        case 4:
+          if (!formData.successVision?.trim()) missingFields.push("Success Vision");
+          if (!formData.deliveryType) missingFields.push("Delivery Type");
+          if (!formData.budget) missingFields.push("Budget Range");
+          break;
+      }
+
       toast({
         variant: "destructive",
-        title: "Required Fields",
-        description: "Please fill in all required fields before continuing.",
+        title: "Required Fields Missing",
+        description: `Please fill in the following fields: ${missingFields.join(", ")}`,
       });
       return;
     }
@@ -98,7 +117,7 @@ export const ConsultingForm = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          access_key: "YOUR_WEB3FORMS_ACCESS_KEY", // You'll need to sign up at web3forms.com
+          access_key: "YOUR_WEB3FORMS_ACCESS_KEY",
           from_name: "Consulting Form Submission",
           to: "thee.lifeguide@gmail.com",
           subject: `New Consulting Form Submission from ${formData.name}`,
@@ -598,4 +617,3 @@ export const ConsultingForm = () => {
     </div>
   );
 };
-
