@@ -17,7 +17,7 @@ import {
 export const ConsultingForm = () => {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const totalSteps = 5;
+  const totalSteps = 6; // Increased to include success step
   const [formData, setFormData] = useState({
     name: "",
     organization: "",
@@ -166,10 +166,7 @@ export const ConsultingForm = () => {
       });
 
       if (response.ok) {
-        toast({
-          title: "Success!",
-          description: "Thank you for sharing your thoughts and insights! We truly appreciate your honesty and openness. Based on your responses, we'll prepare personalized recommendations to ensure Resk'Que delivers exceptional value to you and your audience. If you opted for a follow-up call, expect to hear from us shortly to finalize everything. Have a great day ahead!",
-        });
+        setStep(6); // Move to success step
       } else {
         throw new Error("Failed to submit form");
       }
@@ -196,11 +193,11 @@ export const ConsultingForm = () => {
         <div className="h-1 bg-gray-200 rounded-full">
           <div
             className="h-full bg-black rounded-full transition-all duration-500"
-            style={{ width: `${((step - 1) / totalSteps) * 100}%` }}
+            style={{ width: `${((step - 1) / (totalSteps - 1)) * 100}%` }}
           />
         </div>
         <div className="mt-2 text-sm text-gray-500">
-          STEP {step} OF {totalSteps}
+          {step < 6 ? `STEP ${step} OF ${totalSteps - 1}` : "COMPLETED"}
         </div>
       </div>
 
@@ -834,6 +831,40 @@ export const ConsultingForm = () => {
                 Submit
               </Button>
             </div>
+          </motion.div>
+        )}
+
+        {step === 6 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-8"
+          >
+            <div className="flex justify-center">
+              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
+                <svg
+                  className="w-8 h-8 text-green-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M5 13l4 4L19 7"
+                  />
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-3xl font-bold text-gray-900">Thank You!</h2>
+            <p className="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
+              Thank you for sharing your thoughts and insights! We truly appreciate your honesty and openness. 
+              Based on your responses, we'll prepare personalized recommendations to ensure Resk'Que delivers 
+              exceptional value to you and your audience. If you opted for a follow-up call, expect to hear 
+              from us shortly to finalize everything. Have a great day ahead!
+            </p>
           </motion.div>
         )}
       </div>
