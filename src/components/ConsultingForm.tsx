@@ -155,6 +155,7 @@ export const ConsultingForm = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
         body: JSON.stringify({
           access_key: "8e945660-1127-4981-a429-708507e05eda",
