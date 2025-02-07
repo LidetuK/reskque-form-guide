@@ -742,4 +742,47 @@ export const ConsultingForm = () => {
 
             <Button
               onClick={handleContinue}
-              className="bg-black text-white px-8 py-6 text
+              className="bg-black text-white px-8 py-6 text-lg rounded-full hover:bg-gray-800 transition-colors"
+            >
+              Continue
+            </Button>
+          </motion.div>
+        )}
+
+        {step === 5 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-8"
+          >
+            <h2 className="text-3xl font-bold mb-6">Almost Done!</h2>
+            <p className="text-lg text-gray-700 mb-8">
+              Thank you for providing all the details. Please review your information and click submit when ready.
+            </p>
+            <Button
+              onClick={handleSubmit}
+              className="w-full md:w-auto bg-black text-white px-8 py-6 text-lg rounded-full hover:bg-gray-800 transition-colors"
+            >
+              Submit Form
+            </Button>
+          </motion.div>
+        )}
+
+        {step === 6 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-6"
+          >
+            <h2 className="text-3xl font-bold text-green-600">Thank You!</h2>
+            <p className="text-lg text-gray-700">
+              Your form has been successfully submitted. We'll be in touch with you shortly.
+            </p>
+          </motion.div>
+        )}
+      </div>
+    </div>
+  );
+};
