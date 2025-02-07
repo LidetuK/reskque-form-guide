@@ -17,7 +17,7 @@ import {
 export const ConsultingForm = () => {
   const { toast } = useToast();
   const [step, setStep] = useState(1);
-  const totalSteps = 6; // Increased to include success step
+  const totalSteps = 6;
   const [formData, setFormData] = useState({
     name: "",
     organization: "",
@@ -62,7 +62,7 @@ export const ConsultingForm = () => {
   const validateStep = (currentStep: number) => {
     switch (currentStep) {
       case 1:
-        return true; // Introduction step, no validation needed
+        return true;
       case 2:
         return (
           formData.name?.trim() !== "" &&
@@ -98,7 +98,7 @@ export const ConsultingForm = () => {
           formData.budget !== ""
         );
       case 5:
-        return true; // Final step, optional fields
+        return true;
       default:
         return false;
     }
@@ -167,7 +167,7 @@ export const ConsultingForm = () => {
       });
 
       if (response.ok) {
-        setStep(6); // Move to success step
+        setStep(6);
       } else {
         throw new Error("Failed to submit form");
       }
@@ -188,9 +188,8 @@ export const ConsultingForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-white">
-      {/* Progress bar */}
-      <div className="w-full max-w-3xl mb-8">
+    <div className="w-full h-full flex flex-col items-center justify-center bg-white">
+      <div className="w-full max-w-3xl px-4 md:px-6 mb-6 md:mb-8">
         <div className="h-1 bg-gray-200 rounded-full">
           <div
             className="h-full bg-black rounded-full transition-all duration-500"
@@ -202,8 +201,7 @@ export const ConsultingForm = () => {
         </div>
       </div>
 
-      {/* Form content */}
-      <div className="w-full max-w-3xl">
+      <div className="w-full max-w-3xl px-4 md:px-6">
         {step === 1 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -211,10 +209,10 @@ export const ConsultingForm = () => {
             transition={{ duration: 0.5 }}
             className="text-center"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-8 tracking-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 md:mb-8 tracking-tight">
               SPEAKER / CONSULTING FORM
             </h1>
-            <p className="text-lg text-gray-700 mb-12 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-base md:text-lg text-gray-700 mb-8 md:mb-12 leading-relaxed max-w-2xl mx-auto">
               Thank you for reaching out to Resk'Que's team! Whether you're looking
               to empower your team through group training, host an inspiring
               speaking engagement, or seek expert business consultation, we're here
@@ -224,7 +222,7 @@ export const ConsultingForm = () => {
             </p>
             <Button
               onClick={handleContinue}
-              className="bg-black text-white px-8 py-6 text-lg rounded-full hover:bg-gray-800 transition-colors"
+              className="bg-black text-white px-6 md:px-8 py-4 md:py-6 text-base md:text-lg rounded-full hover:bg-gray-800 transition-colors"
             >
               Continue
             </Button>
@@ -236,11 +234,11 @@ export const ConsultingForm = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="space-y-8"
+            className="space-y-6 md:space-y-8"
           >
-            <h2 className="text-3xl font-bold mb-6">Basic Information</h2>
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6">Basic Information</h2>
             
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               <div className="space-y-4">
                 <Label htmlFor="name">What's your name and organization?</Label>
                 <Input 
@@ -415,7 +413,7 @@ export const ConsultingForm = () => {
 
             <Button
               onClick={handleContinue}
-              className="bg-black text-white px-8 py-6 text-lg rounded-full hover:bg-gray-800 transition-colors"
+              className="w-full md:w-auto bg-black text-white px-6 md:px-8 py-4 md:py-6 text-base md:text-lg rounded-full hover:bg-gray-800 transition-colors"
             >
               Continue
             </Button>
@@ -744,131 +742,4 @@ export const ConsultingForm = () => {
 
             <Button
               onClick={handleContinue}
-              className="bg-black text-white px-8 py-6 text-lg rounded-full hover:bg-gray-800 transition-colors"
-            >
-              Continue
-            </Button>
-          </motion.div>
-        )}
-
-        {step === 5 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-8"
-          >
-            <h2 className="text-3xl font-bold mb-6">Final Thoughts</h2>
-            
-            <div className="space-y-6">
-              <div className="space-y-4">
-                <Label htmlFor="additional-info">
-                  Is there anything else you'd like Resk'Que to know about your organization, event, or project before moving forward?
-                </Label>
-                <Textarea 
-                  id="additional-info"
-                  placeholder="Share any additional information"
-                  className="min-h-[100px]"
-                  value={formData.additionalInfo}
-                  onChange={(e) => handleInputChange('additionalInfo', e.target.value)}
-                />
-              </div>
-
-              <div className="space-y-4">
-                <Label>Would you like to schedule a follow-up call?</Label>
-                <RadioGroup 
-                  value={formData.needsFollowUp}
-                  onValueChange={(value) => handleInputChange('needsFollowUp', value)}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="yes" id="followup-yes" />
-                    <Label htmlFor="followup-yes">Yes</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="no" id="followup-no" />
-                    <Label htmlFor="followup-no">No</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {formData.needsFollowUp === "yes" && (
-                <div className="space-y-6">
-                  <div className="space-y-4">
-                    <Label htmlFor="preferred-time">When would be the best time for the follow-up call?</Label>
-                    <Input 
-                      type="datetime-local" 
-                      id="preferred-time"
-                      value={formData.preferredTime}
-                      onChange={(e) => handleInputChange('preferredTime', e.target.value)}
-                    />
-                  </div>
-
-                  <div className="space-y-4">
-                    <Label>What time zone are you located in?</Label>
-                    <Select 
-                      value={formData.timezone}
-                      onValueChange={(value) => handleInputChange('timezone', value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your timezone" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="est">Eastern Time (ET)</SelectItem>
-                        <SelectItem value="cst">Central Time (CT)</SelectItem>
-                        <SelectItem value="mst">Mountain Time (MT)</SelectItem>
-                        <SelectItem value="pst">Pacific Time (PT)</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className="text-center space-y-6">
-              <Button
-                onClick={handleSubmit}
-                className="bg-black text-white px-8 py-6 text-lg rounded-full hover:bg-gray-800 transition-colors"
-              >
-                Submit
-              </Button>
-            </div>
-          </motion.div>
-        )}
-
-        {step === 6 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-center space-y-8"
-          >
-            <div className="flex justify-center">
-              <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-8 h-8 text-green-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-3xl font-bold text-gray-900">Thank You!</h2>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto leading-relaxed">
-              Thank you for sharing your thoughts and insights! We truly appreciate your honesty and openness. 
-              Based on your responses, we'll prepare personalized recommendations to ensure Resk'Que delivers 
-              exceptional value to you and your audience. If you opted for a follow-up call, expect to hear 
-              from us shortly to finalize everything. Have a great day ahead!
-            </p>
-          </motion.div>
-        )}
-      </div>
-    </div>
-  );
-};
+              className="bg-black text-white px-8 py-6 text
